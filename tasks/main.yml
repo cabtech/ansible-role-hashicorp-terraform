@@ -1,34 +1,32 @@
 ---
 
-- name: 'push bash include'
-  template:
-    src: terraform.sh.j2
+- name: "Push bash include"
+  ansible.builtin.template:
     dest: /usr/local/etc/bash.d/terraform.sh
-    owner: root
     group: root
-    mode: 0644
+    mode: "0644"
+    owner: root
+    src: terraform.sh.j2
   become: true
-  tags:
-  - ct-terraform
+  tags: [ct-terraform]
 
-- name: 'download archive'
-  get_url:
-    url: '{{hashicorp_repo}}/terraform/{{terraform_version}}/{{terraform_target}}'
-    dest: '{{hashicorp_dir_staging}}'
-    timeout: '{{hashicorp_internet_timeout}}'
+- name: "Download archive"
+  ansible.builtin.get_url:
+    dest: "{{ hashicorp_dir_staging }}"
+    mode: "0644"
+    timeout: "{{ hashicorp_internet_timeout }}"
+    url: "{{ hashicorp_repo }}/terraform/{{ terraform_version }}/{{ terraform_target }}"
     validate_certs: false
-  tags:
-  - ct-terraform
+  tags: [ct-terraform]
 
-- name: 'expand archive'
-  unarchive:
-    src: '{{hashicorp_dir_staging}}/{{terraform_target}}'
-    dest: '{{hashicorp_dir_bin}}'
+- name: "Expand archive"
+  ansible.builtin.unarchive:
     copy: false
+    dest: "{{ hashicorp_dir_bin }}"
+    src: "{{ hashicorp_dir_staging }}/{{ terraform_target }}"
   become: true
-  ignore_errors: '{{ansible_check_mode}}'
-  tags:
-  - ct-terraform
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: [ct-terraform]
 
 # --------------------------------
 ...
