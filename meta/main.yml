@@ -1,7 +1,7 @@
 ---
 dependencies:
 - src: git+https://github.com/cabtech/ansible-role-hashicorp-common.git
-  version: '1.0.0'
+  version: "2.2.0"
   tags: ct-terraform
 
 galaxy_info:
