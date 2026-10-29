@@ -1,5 +1,22 @@
 ---
 
+- name: "Include variables wrapper"
+  ansible.builtin.include_tasks:
+    file: variables.yml
+  tags: ["ct-terraform"]
+
+- name: "Disto/Family tasks (FF)"
+  ansible.builtin.include_tasks:
+    file: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+      - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'].split('.')[0] }}.yml"
+      - "{{ ansible_facts['distribution'] }}.yml"
+      - "{{ ansible_facts['os_family'] }}.yml"
+      - "default.yml"
+  tags: ["ct-terraform"]
+
 - name: "Push bash include"
   ansible.builtin.template:
     dest: /usr/local/etc/bash.d/terraform.sh
@@ -8,7 +25,7 @@
     owner: root
     src: terraform.sh.j2
   become: true
-  tags: [ct-terraform]
+  tags: ["ct-terraform"]
 
 - name: "Download archive"
   ansible.builtin.get_url:
@@ -17,7 +34,7 @@
     timeout: "{{ hashicorp_internet_timeout }}"
     url: "{{ hashicorp_repo }}/terraform/{{ terraform_version }}/{{ terraform_target }}"
     validate_certs: false
-  tags: [ct-terraform]
+  tags: ["ct-terraform"]
 
 - name: "Expand archive"
   ansible.builtin.unarchive:
@@ -26,7 +43,7 @@
     src: "{{ hashicorp_dir_staging }}/{{ terraform_target }}"
   become: true
   ignore_errors: "{{ ansible_check_mode }}"
-  tags: [ct-terraform]
+  tags: ["ct-terraform"]
 
 # --------------------------------
 ...
