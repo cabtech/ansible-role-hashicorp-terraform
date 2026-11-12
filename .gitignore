@@ -1,4 +1,3 @@
 # ansible-role-hashicorp-terraform
 .ansible/
-src/
 .lint*
